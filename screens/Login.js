@@ -41,7 +41,7 @@ const LoginForm = () => {
       await AsyncStorage.setItem("token", response.data.access_token);
       const expiryTimestamp = Date.now() + 15 * 60 * 1000;
       await AsyncStorage.setItem("tokenExpiry", expiryTimestamp.toString());
-      navigation.navigate("LinkedIn AI"); // Adjust this route name as needed
+      navigation.navigate("Home"); // Adjust this route name as needed
     } catch (err) {
       setError("Invalid credentials");
       setLoading(false);
