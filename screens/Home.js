@@ -126,7 +126,8 @@ const Home = () => {
   const fetchTrendingTopics = async () => {
     setIsFetchingTrendingTopics(true);
     try {
-      // Mock data for demonstration
+      // Currently using mock data for demonstration.
+      // Replace this with a real fetch call if you have an API for trending topics.
       const mockData = {
         trending_topics: [
           { title: `Latest development in ${formData.topics} for ${formData.country}`, source: 'News API' },
@@ -170,6 +171,10 @@ const Home = () => {
     autoGeneratePost(topicTitle);
   };
 
+  /**
+   * Call the /api/generate-post endpoint to generate a post based on a topic,
+   * category (formData.topics), and country (formData.country).
+   */
   const autoGeneratePost = async (topic) => {
     if (!topic) return;
     setIsGenerating(true);
@@ -179,17 +184,26 @@ const Home = () => {
     setCustomPrompt('');
 
     try {
-      // Mock response
-      const mockResponse = {
-        post: `Here's an AI-generated post about **${topic}** in the *${formData.topics}* category for ${formData.country}.\n\nThis content is automatically generated based on trending topics and designed to engage your LinkedIn audience.\n\nKey points to consider:\n- Point 1 about ${topic}\n- Point 2 about ${topic}\n- Point 3 about ${topic}\n\nWhat are your thoughts on this development?`,
-        inspired_by: 'Industry Expert',
-        custom_prompt: `Generate a LinkedIn post about ${topic} in the ${formData.topics} category for ${formData.country}`
-      };
+      const response = await fetch('https://ai.brannovate.com/api/generate-post', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          topic,
+          category: formData.topics,
+          country: formData.country,
+        }),
+      });
 
-      if (mockResponse.post) {
-        setEditorContent(mockResponse.post);
-        setUsedPersona(mockResponse.inspired_by || '');
-        setCustomPrompt(mockResponse.custom_prompt || '');
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      const data = await response.json();
+      // Expecting: { post: string, inspired_by?: string, custom_prompt?: string }
+      if (data.post) {
+        setEditorContent(data.post);
+        setUsedPersona(data.inspired_by || '');
+        setCustomPrompt(data.custom_prompt || '');
         setShowGenerated(true);
       }
     } catch (err) {
@@ -220,7 +234,8 @@ const Home = () => {
     setIsPublishing(true);
 
     try {
-      // Simulate API call
+      // Simulate API call to publish or schedule post
+      // Replace with your real publish/schedule endpoint if needed
       setTimeout(() => {
         Alert.alert(
           'Success',
